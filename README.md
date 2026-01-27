@@ -1,59 +1,146 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+Yes, that was the content, but you pasted it with some "garbage text" (like download, content_copy, etc.) from the chat interface.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Also, I noticed we missed one tiny detail from the PDF Requirements (Section 13): "Credentials must be documented in README."
 
-## About Laravel
+Here is the FINAL, PERFECT VERSION. Copy this exactly. It includes the login passwords for the seed users so the reviewer can test it immediately.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+File: README.md
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+code
+Markdown
+download
+content_copy
+expand_less
+# Digital Marketplace API
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+This repository contains the backend solution for the Digital Marketplace technical assessment. It is a RESTful API built with Laravel 11, PostgreSQL, and Redis, fully containerized using Docker.
 
-## Learning Laravel
+## 🚀 Setup Instructions
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+The application relies on Docker and Docker Compose. No local PHP or Composer installation is required.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 1. Initialize the Environment
+Clone the repository and start the containers.
 
-## Laravel Sponsors
+```bash
+cp .env.example .env
+docker-compose up -d --build
+2. Application Setup
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Once the containers are running, install dependencies and set up the database with seed data.
 
-### Premium Partners
+code
+Bash
+download
+content_copy
+expand_less
+docker-compose exec app composer install
+docker-compose exec app php artisan key:generate
+docker-compose exec app php artisan migrate --seed
+3. Start Queue Worker
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+The application uses Redis queues to process purchases asynchronously. You must start a worker to process these jobs.
 
-## Contributing
+code
+Bash
+download
+content_copy
+expand_less
+docker-compose exec app php artisan queue:work
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+The API will be available at: http://localhost
 
-## Code of Conduct
+🔑 Default Credentials (Seed Data)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+The migrate --seed command creates two default users for testing:
 
-## Security Vulnerabilities
+Role	Email	Password
+Creator	creator@example.com	password
+Customer	customer@example.com	password
+🏗 Architecture & Design Decisions
+Code Structure
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The project adheres to a domain-oriented architecture to maintain separation of concerns:
 
-## License
+Controllers: Kept intentionally thin. They handle request validation and response formatting only.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Actions: Business logic (e.g., RegisterUserAction, ProcessPurchaseJob) is isolated in the app/Actions directory. This ensures logic is reusable and easily testable without HTTP dependencies.
+
+Form Requests: All validation rules are encapsulated in strict Form Request classes.
+
+Database Design
+
+Monetary Values: All prices are stored as integers (cents) to prevent floating-point calculation errors.
+
+Roles: User roles (Creator vs Customer) are enforced using database-level Enums.
+
+Indexing: Foreign keys on purchases and products are indexed to optimize lookup performance.
+
+Security
+
+Authentication: Implemented using Laravel Sanctum (Bearer Token).
+
+File Storage: Uploaded files are stored in a private directory (storage/app/products) and are never accessible via the public web server.
+
+Secure Downloads: File access is granted solely through Temporary Signed URLs. These URLs verify the user's purchase history and expire after 60 minutes.
+
+✅ Testing
+
+The project uses Pest PHP for automated testing. The test suite covers:
+
+Authentication flows (Register/Login).
+
+Authorization logic (Creators vs Customers).
+
+Purchase processing (Queue dispatching).
+
+Security controls (Preventing unauthorized downloads).
+
+To run the tests:
+
+code
+Bash
+download
+content_copy
+expand_less
+docker-compose exec app ./vendor/bin/pest
+📚 API Documentation
+
+API documentation is generated using Scribe. You can find the OpenAPI specification (openapi.yaml) and Postman collection (collection.json) in the public/docs directory.
+
+To regenerate documentation:
+
+code
+Bash
+download
+content_copy
+expand_less
+docker-compose exec app php artisan scribe:generate
+🚢 Deployment Guide
+Production Infrastructure
+
+To deploy this application to a production environment (e.g., AWS, DigitalOcean):
+
+Containerization: The provided Dockerfile and Nginx configuration (docker/nginx/default.conf) are production-ready.
+
+Database: Connect to a managed PostgreSQL instance (RDS/Cloud SQL) by updating DB_HOST in the environment variables.
+
+Queue & Cache: Connect to a managed Redis instance (ElastiCache/Memorystore).
+
+Storage: In .env, change FILESYSTEM_DISK to s3 and provide AWS credentials to offload file storage to S3.
+
+CI/CD
+
+A generic CI workflow is included in .github/workflows/tests.yml. It automates:
+
+Environment setup.
+
+Dependency installation.
+
+Static analysis and Test execution.
+
+code
+Code
+download
+content_copy
+expand_less
