@@ -12,7 +12,7 @@ Clone the repository and start the containers.
 
 ```bash
 cp .env.example .env
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ### 2. Application Setup
@@ -20,10 +20,10 @@ docker-compose up -d --build
 Once the containers are running, install dependencies and set up the database with seed data.
 
 ```bash
-docker-compose exec app composer install
-docker-compose exec app php artisan key:generate
-docker-compose exec app chmod -R 777 storage bootstrap/cache
-docker-compose exec app php artisan migrate --seed
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app chmod -R 777 storage bootstrap/cache
+docker compose exec app php artisan migrate --seed
 ```
 
 ### 3. Start Queue Worker
@@ -31,7 +31,7 @@ docker-compose exec app php artisan migrate --seed
 The application uses Redis queues to process purchases asynchronously. You must start a worker to process these jobs.
 
 ```bash
-docker-compose exec app php artisan queue:work
+docker compose exec app php artisan queue:work
 ```
 
 The API will be available at: http://localhost
@@ -79,7 +79,7 @@ The project uses Pest PHP for automated testing. The test suite covers:
 To run the tests:
 
 ```bash
-docker-compose exec app ./vendor/bin/pest
+docker compose exec app ./vendor/bin/pest
 ```
 
 ## 📚 API Documentation
@@ -89,7 +89,7 @@ API documentation is generated using Scribe. You can find the OpenAPI specificat
 To regenerate documentation:
 
 ```bash
-docker-compose exec app php artisan scribe:generate
+docker compose exec app php artisan scribe:generate
 ```
 
 ## 🚢 Deployment Guide
