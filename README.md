@@ -83,7 +83,7 @@ docker-compose exec app ./vendor/bin/pest
 
 ## 📚 API Documentation
 
-API documentation is generated using Scribe. You can find the OpenAPI specification (`openapi.yaml`) and Postman collection (`collection.json`) in the `public/docs` directory.
+API documentation is generated using Scribe. You can find the OpenAPI specification (`openapi.yaml`) and Postman collection (`collection.json`) in the `public/docs` directory, or simply visit `http://localhost/docs` (or `{app-url}/docs` in production) to get the full list and information about all available endpoints.
 
 To regenerate documentation:
 
