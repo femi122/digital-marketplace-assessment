@@ -16,10 +16,17 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/products', [ProductController::class, 'index']);
 
+// This route verifies the cryptographic signature in the URL
+Route::get('/download-file', [DownloadController::class, 'serve'])
+    ->name('file.download') // This name MUST match the one in the Action
+    ->middleware('signed');
+
 // Protected Routes
 Route::middleware('auth:sanctum')->group(function () {
     // Purchase a product
     Route::post('/products/{id}/purchase', [PurchaseController::class, 'store']);
     // Product Management
     Route::post('/products', [ProductController::class, 'store']); 
+    //Download a Product 
+    Route::get('/products/{id}/download', [DownloadController::class, 'getLink']);
 });
