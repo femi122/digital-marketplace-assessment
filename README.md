@@ -1,10 +1,6 @@
-Yes, that was the content, but you pasted it with some "garbage text" (like download, content_copy, etc.) from the chat interface.
+Step 1: Update README.md
 
-Also, I noticed we missed one tiny detail from the PDF Requirements (Section 13): "Credentials must be documented in README."
-
-Here is the FINAL, PERFECT VERSION. Copy this exactly. It includes the login passwords for the seed users so the reviewer can test it immediately.
-
-File: README.md
+Replace the entire content of README.md with this:
 
 code
 Markdown
@@ -144,3 +140,11 @@ Code
 download
 content_copy
 expand_less
+### Step 2: Commit and Push Fix
+
+Run these commands in your VS Code terminal to send the fix to GitHub:
+
+```bash
+git add README.md
+git commit -m "docs: fix markdown formatting in readme"
+git push origin main
