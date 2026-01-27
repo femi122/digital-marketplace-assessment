@@ -24,5 +24,8 @@ RUN pecl install redis && docker-php-ext-enable redis
 # Get Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Fix Git ownership issue inside container
+RUN git config --global --add safe.directory /var/www
+
 # Set working directory
 WORKDIR /var/www
