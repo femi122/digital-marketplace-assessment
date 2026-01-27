@@ -22,6 +22,7 @@ Once the containers are running, install dependencies and set up the database wi
 ```bash
 docker-compose exec app composer install
 docker-compose exec app php artisan key:generate
+docker-compose exec app chmod -R 777 storage bootstrap/cache
 docker-compose exec app php artisan migrate --seed
 ```
 
